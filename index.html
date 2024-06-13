@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Timeline</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
+    <style>
+        #visualization {
+            border: 1px solid lightgray;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Interactive Timeline</h1>
+    </header>
+    <main>
+        <section>
+            <div id="visualization"></div>
+            <div>
+                <label for="time-scale">Timescale:</label>
+                <input type="range" id="time-scale" min="1" max="100" value="50">
+                <span id="time-scale-value">50</span>
+            </div>
+            <div>
+                <label for="run-scale">Run scale:</label>
+                <input type="range" id="run-scale" min="1" max="100" value="50">
+                <span id="run-scale-value">50</span>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 My GitHub Page</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <script>
+        // Data for the timeline
+        var items = new vis.DataSet([
+            {id: 1, content: 'item 1', start: '2024-06-10'},
+            {id: 2, content: 'item 2', start: '2024-06-11'},
+            {id: 3, content: 'item 3', start: '2024-06-12'},
+            {id: 4, content: 'item 4', start: '2024-06-13'},
+            {id: 5, content: 'item 5', start: '2024-06-14'}
+        ]);
+
+        // Configuration for the Timeline
+        var options = {
+            zoomable: true,
+            moveable: true,
+            stack: false
+        };
+
+        // Create a Timeline
+        var container = document.getElementById('visualization');
+        var timeline = new vis.Timeline(container, items, options);
+
+        // Event listeners for the timescale and run scale
+        document.getElementById('time-scale').addEventListener('input', function() {
+            var value = this.value;
+            document.getElementById('time-scale-value').textContent = value;
+            // Update timeline scale here if needed
+        });
+
+        document.getElementById('run-scale').addEventListener('input', function() {
+            var value = this.value;
+            document.getElementById('run-scale-value').textContent = value;
+            // Update run scale here if needed
+        });
+    </script>
+</body>
+</html>
