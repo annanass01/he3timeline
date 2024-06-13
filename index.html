@@ -3,104 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-    <title>Interactive Timeline</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
-    <style>
-        #visualization {
-            border: 1px solid lightgray;
-            height: 400px;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Interactive Timeline</h1>
-    </header>
-    <main>
-        <section>
-            <div id="visualization"></div>
-            <div>
-                <label for="time-scale">Timescale:</label>
-                <input type="range" id="time-scale" min="1" max="100" value="50">
-                <span id="time-scale-value">50</span>
-            </div>
-            <div>
-                <label for="run-scale">Run scale:</label>
-                <input type="range" id="run-scale" min="1" max="100" value="50">
-                <span id="run-scale-value">50</span>
-            </div>
-=======
-    <title>My GitHub Page</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <header>
-        <h1>Welcome to My GitHub Page</h1>
-    </header>
-    <main>
-        <section>
-            <h2>About Me</h2>
-            <p>This is a brief introduction about myself. More content will be added soon.</p>
-        </section>
-        <section>
-            <h2>Projects</h2>
-            <p>Here are some of my projects. More details to come.</p>
-        </section>
-        <section>
-            <h2>Blog</h2>
-            <p>Read my latest blog posts. Coming soon!</p>
-        </section>
-        <section>
-            <h2>Contact</h2>
-            <p>You can contact me via email at: myemail@example.com</p>
->>>>>>> origin/main
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2024 My GitHub Page</p>
-    </footer>
-<<<<<<< HEAD
-
+    <title>Timeline Viewer</title>
+    <link href="styles.css" rel="stylesheet" type="text/css">
+    <!-- Include vis.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1>Timeline Viewer</h1>
+    <div id="timeline"></div>
+
+    <div id="controls">
+        <label for="runSlider">Run Range:</label>
+        <input type="range" id="runSlider" min="0" max="100" value="50">
+        <span id="runSliderValue">50</span>
+
+        <label for="ampSlider">Amp Range:</label>
+        <input type="range" id="ampSlider" min="0" max="50" value="25">
+        <span id="ampSliderValue">25</span>
+    </div>
+
     <script>
-        // Data for the timeline
-        var items = new vis.DataSet([
-            {id: 1, content: 'item 1', start: '2024-06-10'},
-            {id: 2, content: 'item 2', start: '2024-06-11'},
-            {id: 3, content: 'item 3', start: '2024-06-12'},
-            {id: 4, content: 'item 4', start: '2024-06-13'},
-            {id: 5, content: 'item 5', start: '2024-06-14'}
-        ]);
+        // Data extracted from Python script
+        const runs = [82466, 82467, 82468, 82469, 82470]; // Example data
+        const amps = [1.8742, 1.2934, 37.0157, 37.0167, 37.0163]; // Example data
+        const timestamps = [
+            "Fri Mar 15 17:08:57 2024",
+            "Fri Mar 15 18:37:45 2024",
+            "Fri Mar 15 18:40:07 2024",
+            "Fri Mar 15 19:41:36 2024",
+            "Fri Mar 15 20:42:05 2024"
+        ]; // Example data
+
+        // Convert data to timeline items
+        const items = runs.map((run, index) => ({
+            id: index + 1,
+            content: `Run: ${run}, Amp: ${amps[index]}`,
+            start: new Date(timestamps[index])
+        }));
+
+        // Create a DataSet (allows two-way data-binding)
+        const data = new vis.DataSet(items);
 
         // Configuration for the Timeline
-        var options = {
-            zoomable: true,
-            moveable: true,
-            stack: false
+        const options = {
+            width: '100%',
+            height: '400px',
+            margin: {
+                item: 20
+            }
         };
 
         // Create a Timeline
-        var container = document.getElementById('visualization');
-        var timeline = new vis.Timeline(container, items, options);
+        const container = document.getElementById('timeline');
+        const timeline = new vis.Timeline(container, data, options);
 
-        // Event listeners for the timescale and run scale
-        document.getElementById('time-scale').addEventListener('input', function() {
-            var value = this.value;
-            document.getElementById('time-scale-value').textContent = value;
-            // Update timeline scale here if needed
-        });
+        // Update displayed run slider value
+        const runSlider = document.getElementById('runSlider');
+        const runSliderValue = document.getElementById('runSliderValue');
+        runSlider.oninput = function() {
+            runSliderValue.textContent = this.value;
+            updateTimeline();
+        };
 
-        document.getElementById('run-scale').addEventListener('input', function() {
-            var value = this.value;
-            document.getElementById('run-scale-value').textContent = value;
-            // Update run scale here if needed
-        });
+        // Update displayed amp slider value
+        const ampSlider = document.getElementById('ampSlider');
+        const ampSliderValue = document.getElementById('ampSliderValue');
+        ampSlider.oninput = function() {
+            ampSliderValue.textContent = this.value;
+            updateTimeline();
+        };
+
+        // Function to update the timeline based on slider values
+        function updateTimeline() {
+            const maxRun = parseInt(runSlider.value, 10);
+            const maxAmp = parseFloat(ampSlider.value);
+
+            const filteredItems = items.filter(item => {
+                const run = parseInt(item.content.match(/Run: (\d+),/)[1], 10);
+                const amp = parseFloat(item.content.match(/Amp: ([0-9.]+)/)[1]);
+                return run <= maxRun && amp <= maxAmp;
+            });
+
+            data.clear();
+            data.add(filteredItems);
+        }
     </script>
 </body>
 </html>
-=======
-</body>
-</html>
->>>>>>> origin/main
